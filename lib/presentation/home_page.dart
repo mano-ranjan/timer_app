@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,6 +12,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const platform = MethodChannel('samples.flutter.dev/methodTimer');
+  static const _stream = EventChannel('samples.flutter.dev/eventTimer');
+  String timerData = "hi timer";
+  late StreamSubscription streamSubscription;
   String _batteryLevel = 'Unknown battery level.';
 
   Future<void> _getBatteryLevel() async {
@@ -27,6 +32,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   int timeVar = 00;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    streamSubscription = _stream.receiveBroadcastStream().listen((event) {
+      setState(() {
+        timerData = event.toString();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +82,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('get battery level'),
             ),
-            Text(_batteryLevel),
+            Text(timerData),
           ],
         ),
       ),

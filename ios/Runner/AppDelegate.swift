@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import CoreMotion
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
@@ -7,19 +8,42 @@ import Flutter
     var seconds = 60
     var timer = Timer()
     var isTimerRunning = false
+    var runCount = 0
     
     func runTimer() {
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
-    }
-    
-    func updateTimer() {
-        seconds -= 1
-        timerLabel.text = timeString(time: TimeInterval(seconds))
+//        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
+        
+
+        
+//                  result("success")
 
     }
     
+//    func updateTimer() {
+//        seconds -= 1
+//        timerLabel.text = timeString(time: TimeInterval(seconds))
+//
+//    }
+    let motionManager = CMMotionManager()
+    
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         
+        if #available(iOS 10.0, *) {
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [self] timer in
+                print("Timer fired!")
+                runCount += 1
+                events(runCount)
+                //// EVENT CHANNEL CODE
+                
+                if runCount == 3 {
+                    timer.invalidate()
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        return nil
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
